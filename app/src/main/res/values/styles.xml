@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="RangeBarStyle">
+        <item name="activeColor">@color/black</item>
+        <item name="inactiveColor">@color/white</item>
+        <item name="thumbRadius">16dp</item>
+        <item name="barThickness">4dp</item>
+    </style>
+</resources>
