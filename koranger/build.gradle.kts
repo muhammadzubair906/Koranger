@@ -32,7 +32,7 @@ deployer {
 }
 
 android {
-    version = "0.0.1"
+    version = "0.0.1b"
     group = "com.muhammadzubair"
     namespace = "com.muhammadzubair.koranger"
     compileSdk = 34
@@ -41,8 +41,7 @@ android {
         minSdk = 21
 
         aarMetadata {
-
-            version = "0.0.1"
+            version = "0.0.1b"
             group = "com.muhammadzubair"
             namespace = "com.muhammadzubair.koranger"
             compileSdk = 34
@@ -67,8 +66,14 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 
     publishing {
@@ -83,7 +88,7 @@ publishing {
     publications {
         create<MavenPublication>("koranger") {
             artifactId = "koranger"
-            version = "0.0.1"
+            version = "0.0.1b"
             groupId = "com.muhammadzubair"
 
             pom {
@@ -125,6 +130,11 @@ publishing {
                         password = project.findProperty("GITHUB_TOKEN") as String? ?: ""
                     }
                 }
+
+//                maven {
+//                    name = "koranger"
+//                    url = uri(layout.buildDirectory.dir("repo"))
+//                }
             }
         }
     }
@@ -144,3 +154,11 @@ dependencies {
     implementation(libs.androidx.material3)
 }
 
+tasks.register<Zip>("generateKorangerRepo") {
+    val publishTask = tasks.named(
+        "publishKorangerPublicationToKorangerRepository",
+        PublishToMavenRepository::class.java)
+    from(publishTask.map { it.repository.url })
+    into("koranger")
+    archiveFileName.set("koranger.zip")
+}

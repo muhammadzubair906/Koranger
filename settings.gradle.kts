@@ -21,5 +21,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Koranger"
-include(":app")
+include(":example")
 include(":koranger")
