@@ -17,10 +17,11 @@ Add the following to your `build.gradle.kts`:
 ```kotlin
 repositories {
     mavenCentral()
+    maven { url 'https://www.jitpack.io' }
 }
 
 dependencies {
-    implementation("com.muhammadzubair.koranger:rangebarview:1.0.0")
+    implementation("com.github.muhammadzubair906:Koranger:v0.0.1") //Available only on Jitpack Now
 }
 ```
 
