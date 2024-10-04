@@ -1,38 +1,34 @@
 plugins {
     alias(libs.plugins.android.library)
-    id("io.deepmedia.tools.deployer") version "0.14.0"
     alias(libs.plugins.jetbrains.kotlin.android)
     id("maven-publish")
     id("signing")
+    id("org.jetbrains.dokka") version "1.9.20"
 }
 
-deployer {
-    project.description =
-        "A simple and highly customizable Jetpack Compose and Android Native RangeBar library."
-    projectInfo {
-        name = "Koranger"
-        description =
-            "A simple and highly customizable Jetpack Compose and Android Native RangeBar library."
-        url = "https://github.com/muhammadzubair906/Koranger"
-        groupId = "com.muhammadzubair"
-        artifactId = "koranger"
-        license(apache2)
-        license(MIT)
-        developer("Muhammad Zubair", "info@muhammadzubair.com")
+lateinit var sourcesArtifact: PublishArtifact
+lateinit var javadocArtifact: PublishArtifact
+
+
+tasks {
+    val sourcesJar by creating(Jar::class) {
+        archiveClassifier.set("sources")
+        from(android.sourceSets["main"].java.srcDirs)
     }
-
-    centralPortalSpec {
-        auth.user.set(secret("ossrhUsername"))
-        auth.password.set(secret("ossrhPassword"))
-
-        // Signing is required
-        signing.key.set(secret("signing.keyId"))
-        signing.password.set(secret("signing.password"))
+    val dokkaHtml by getting(org.jetbrains.dokka.gradle.DokkaTask::class)
+    val javadocJar by creating(Jar::class) {
+        dependsOn(dokkaHtml)
+        archiveClassifier.set("javadoc")
+        from(dokkaHtml.outputDirectory)
+    }
+    artifacts {
+        sourcesArtifact = archives(sourcesJar)
+        javadocArtifact = archives(javadocJar)
     }
 }
 
 android {
-    version = "0.0.1b"
+    version = "0.0.1c"
     group = "com.muhammadzubair"
     namespace = "com.muhammadzubair.koranger"
     compileSdk = 34
@@ -41,7 +37,7 @@ android {
         minSdk = 21
 
         aarMetadata {
-            version = "0.0.1b"
+            version = "0.0.1c"
             group = "com.muhammadzubair"
             namespace = "com.muhammadzubair.koranger"
             compileSdk = 34
@@ -77,19 +73,31 @@ android {
     }
 
     publishing {
-        singleVariant("koranger") {
+        singleVariant("Koranger") {
             withSourcesJar()
             withJavadocJar()
         }
     }
 }
 
+
+dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+}
+
 publishing {
     publications {
-        create<MavenPublication>("koranger") {
+        register<MavenPublication>("Koranger") {
             artifactId = "koranger"
-            version = "0.0.1b"
+            version = "0.0.1c"
             groupId = "com.muhammadzubair"
+            artifact(sourcesArtifact)
+            artifact(javadocArtifact)
 
             pom {
                 name = "Koranger"
@@ -130,35 +138,11 @@ publishing {
                         password = project.findProperty("GITHUB_TOKEN") as String? ?: ""
                     }
                 }
-
-//                maven {
-//                    name = "koranger"
-//                    url = uri(layout.buildDirectory.dir("repo"))
-//                }
             }
         }
     }
 }
 
-signing {
-    sign(publishing.publications["koranger"])
-}
-
-
-dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-}
-
-tasks.register<Zip>("generateKorangerRepo") {
-    val publishTask = tasks.named(
-        "publishKorangerPublicationToKorangerRepository",
-        PublishToMavenRepository::class.java)
-    from(publishTask.map { it.repository.url })
-    into("koranger")
-    archiveFileName.set("koranger.zip")
+signing{
+    sign(publishing.publications["Koranger"])
 }
