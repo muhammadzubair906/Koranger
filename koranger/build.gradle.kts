@@ -1,8 +1,42 @@
 plugins {
     alias(libs.plugins.android.library)
+    id("io.deepmedia.tools.deployer") version "0.14.0"
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("maven-publish")
-    id("signing")
+}
+
+deployer {
+    project.description = "A simple and highly customizable Jetpack Compose and Android Native RangeBar library."
+    projectInfo {
+        name = "Koranger"
+        description =
+            "A simple and highly customizable Jetpack Compose and Android Native RangeBar library."
+        url = "https://github.com/muhammadzubair906/Koranger"
+        groupId = "com.muhammadzubair.koranger"
+        artifactId = "koranger"
+        license(apache2)
+        license(MIT)
+        developer("Muhammad Zubair", "info@muhammadzubair.com")
+    }
+
+    centralPortalSpec {
+        auth.user.set(secret("ossrhUsername"))
+        auth.password.set(secret("ossrhPassword"))
+
+        // Signing is required
+        signing.key.set(secret("signing.keyId"))
+        signing.password.set(secret("signing.password"))
+    }
+
+    githubSpec {
+        owner.set("muhammadzubair906")
+        repository.set("Koranger")
+        auth.user.set(secret("github.signing.username"))
+        auth.token.set(secret("github.signing.keyId"))
+        release.version = "0.0.1"
+        release.description = "Basic Range bar Configured"
+        release.tag.set("v0.0.1")
+
+    }
 }
 
 android {
@@ -50,72 +84,11 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-}
-
-
-publishing {
-    publications {
-        create<MavenPublication>("release") {
-            from(components.findByName("release"))
-
-            groupId = "com.muhammadzubair.koranger"
-            artifactId = "koranger"
-            version = "0.0.1"
-            description = "A simple and highly customizable Jetpack Compose and Android Native RangeBar library."
-
-
-            pom {
-                name.set("Koranger")
-                description.set("A highly customizable Jetpack Compose RangeBar library.")
-                url.set("https://github.com/muhammadzubair906/Koranger")
-                licenses {
-                    license {
-                        name.set("The Apache License, Version 2.0")
-                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("muhammadzubair906")
-                        name.set("Muhammad Zubair")
-                        email.set("info@muhammadzubair.com")
-                    }
-                }
-                scm {
-                    connection.set("scm:git:github.com/muhammadzubair906/Koranger.git")
-                    developerConnection.set("scm:git:ssh://github.com/muhammadzubair906/Koranger.git")
-                    url.set("https://github.com/muhammadzubair906/Koranger")
-                }
-            }
-
-
-
-
-        }
-    }
-
-    repositories {
-        maven {
-            name = "MavenCentral"
-            url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-
-            credentials {  // Credentials for authentication
-                username = project.findProperty("ossrhUsername") as String? ?: ""
-                password = project.findProperty("ossrhPassword") as String? ?: ""
-            }
-        }
-    }
-
-    signing {
-        useGpgCmd()
-        sign(publishing.publications["release"])
-    }
 }
 

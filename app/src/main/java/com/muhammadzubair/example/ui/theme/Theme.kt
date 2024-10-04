@@ -1,4 +1,4 @@
-package com.muhammadzubair.koranger.ui.theme
+package com.muhammadzubair.example.ui.theme
 
 import android.app.Activity
 import android.os.Build

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.muhammadzubair.koranger"
+    namespace = "com.muhammadzubair.example"
     compileSdk = 34
 
     defaultConfig {
